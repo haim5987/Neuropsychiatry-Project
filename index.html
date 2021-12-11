@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Neuropsychiatry</title>
+    <script src="./dist/jspsych.js"></script>
+    <script src="./dist/plugin-html-keyboard-response.js"></script>
+    <script src="./dist/plugin-survey-multi-choice.js"></script>
+    <script src="./dist/plugin-call-function.js"></script>
+    <link href="./dist/jspsych.css" rel="stylesheet" type="text/css"></link>
+  </head>
+  <body></body>
+  <script>
+
+    /* initialize jsPsych */
+    var jsPsych = initJsPsych();
+    var preload = {
+    type: preload,
+    auto_preload: true};
+    var timeline = []
+    var pink_noise = new Audio('./experimentData/sounds/PinkNoise.wav')
+
+
+    var welcome = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: "<b>Welcome to the experiment<br><br></b>Press the space bar to continue"
+    }
+    timeline.push(welcome)
+
+    var instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: "<b>Instructions...<br>Pink Noise...Brown Noise...Yoram Yovell and more<br><br></b>Press the space bar to continue"
+    }
+    timeline.push(instructions)
+
+    var call_sound = {
+        type: jsPsychCallFunction,
+        func: function(){
+            pink_noise.play()
+        }
+    }
+    timeline.push(call_sound)
+
+    var trial_Qexample = {
+        type: jsPsychSurveyMultiChoice,
+        questions: [
+            {
+            prompt: ".מטילים מטבע הוגן 10 פעמים<br><br>?מה ההסתברות שהמטבע ייפול על אותו צד בכל 10 ההטלות", 
+            name: 'Q1', 
+            options: ['1', '2', '3', '4'], 
+            required: true
+            }
+        ]
+    }
+    timeline.push(trial_Qexample)
+
+    var end_page = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: "<b>You have finshed, you so smart, well done!<br><br></b>Press the space bar to continue"
+    }
+    timeline.push(end_page)
+
+    
+    var call_end_sound = {
+        type: jsPsychCallFunction,
+        func: function(){
+            var vol = 1;
+            var interval = 85;
+
+            var fadeout = setInterval(
+            function() {
+                if (vol > 0) {
+                vol -= 0.05;
+                if (vol < 0) pink_noise.volume = 0;
+                else pink_noise.volume = vol
+                }
+                else {
+                clearInterval(fadeout);
+                }
+            }, interval);
+        }
+    }
+    timeline.push(call_end_sound)
+        
+    //Initialization of all events
+    jsPsych.run(timeline);        
+    
+  </script>
+</html>
